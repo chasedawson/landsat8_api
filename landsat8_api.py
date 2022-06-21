@@ -4,6 +4,7 @@ import requests
 import sys
 import time
 import threading
+import re
 
 class Landsat8_API_Accessor:
     def __init__(self, username, password):
