@@ -162,6 +162,34 @@ class Landsat8_API_Accessor:
 
         return downloaded
     
+    def download_file(self, url, downloaded):
+        """
+        Saves file to local system.
+        
+        Parameters
+        ----------
+            url: str, required
+                Link to file to be downloaded.
+                
+        Output
+        ------
+        Path to downloaded file : str
+        """
+        self.sema.acquire()
+        try:
+            res = requests.get(url, stream=True)
+            filename = self.__getFilename_fromCd(res.headers.get('content-disposition'))
+            print("Downloading {filename}...".format(filename = filename))
+            open(filename, 'wb').write(res.content)
+            print('Downloaded {filename}.'.format(filename = filename))
+            entity_id = "L2ST_" + filename.split('.')[0] + "_TIF"
+            downloaded.append(entity_id)
+            self.sema.release()
+        except Exception as e:
+            print("Failed to download from {url}. Will try to re-download.".format(url = url))
+            self.sema.release()
+            self.runDownload(self.threads, url, downloaded)
+    
     def login(self, username, password):
         """
         Authenticates user given username and password and returns API key.
