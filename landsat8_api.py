@@ -161,6 +161,56 @@ class Landsat8_API_Accessor:
         downloaded = [{"entityId": x, "scene_entityId": scene_entityId_map[x]} for x in downloaded]
 
         return downloaded
+    
+    def login(self, username, password):
+        """
+        Authenticates user given username and password and returns API key.
+        
+        Parameters
+        ----------
+        username : str, required
+            USGS account username.
+            
+        password : str, required
+            USGS account password. 
+            
+        Notes 
+        -----
+        Go to https://ers.cr.usgs.gov/profile/access to request access 
+        to the API and/or make an account.
+        
+        """
+        # login information
+        payload = {'username': username, 'password': password}
+
+        # get apiKey 
+        apiKey = self.sendRequest(self.SERVICE_URL + "login", payload)
+        if apiKey == None:
+            print("Login Failed")
+        else:
+            print("Login Successful")
+        
+        return apiKey
+
+    def logout(self):
+        """
+        Invalidates API key. 
+        
+        Parameters
+        ----------
+        apiKey : str, required
+            Valid API key. Obtain using the login() method defined above.
+            
+        Notes
+        -----
+        Make sure to call when you've finished working to ensure that your 
+        API key can't be used by an unauthorized user.
+        
+        """
+        if self.sendRequest(self.SERVICE_URL + "logout", None, self.apiKey) == None:
+            print("Logged Out\n\n")
+        else:
+            print("Logout Failed\n\n")
 
     def sendRequest(self, url, data, apiKey = None):
         """
