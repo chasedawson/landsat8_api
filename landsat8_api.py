@@ -162,6 +162,28 @@ class Landsat8_API_Accessor:
 
         return downloaded
     
+    def __getFilename_fromCd(self, cd):
+        """
+        Uses content-disposition to infer filename and filetype.
+        
+        Parameters
+        ----------
+        cd : str, required
+            The Content-Disposition response header from HTTP request 
+            to download a file.
+            
+        Output
+        ------
+        Inferred filename and type of provided file : str  
+        """
+        if not cd:
+            return None
+        fname = re.findall('filename=(.+)', cd)
+        if len(fname) == 0:
+            return None
+        
+        return re.sub('\"', '', fname[0]) # remove extra quotes
+    
     def download_file(self, url, downloaded):
         """
         Saves file to local system.
