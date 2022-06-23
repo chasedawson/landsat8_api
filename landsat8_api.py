@@ -16,7 +16,7 @@ class Landsat8_API_Accessor:
         self.sema = threading.Semaphore(value=self.MAX_THREADS)
 
     # landsat_ot_c2_l2
-    def __add_list(self, list_id, entity_ids, dataset = 'landsat_band_files_c2_l2', logging = False):
+    def __add_list(self, list_id, entity_ids, dataset = 'landsat_ot_c2_l2', logging = False):
         print("__add_list called")
         payload = {
             'listId': list_id,
@@ -46,7 +46,7 @@ class Landsat8_API_Accessor:
             downloads = self.__get_secondaryDownloads(products, downloads)
         return downloads
 
-    def __get_product_download_options(self, list_id, dataset = 'landsat_band_files_c2_l2', logging = False):
+    def __get_product_download_options(self, list_id, dataset = 'landsat_ot_c2_l2', logging = False):
         print("__get_product_download_options called")
         payload = {
             "listId": list_id,
