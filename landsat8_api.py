@@ -17,7 +17,6 @@ class Landsat8_API_Accessor:
 
     # landsat_ot_c2_l2
     def __add_list(self, list_id, entity_ids, dataset = 'landsat_ot_c2_l2', logging = False):
-        print("__add_list called")
         payload = {
             'listId': list_id,
             'datasetName': dataset,
@@ -28,14 +27,12 @@ class Landsat8_API_Accessor:
             print('Added', count, 'scenes to list', list_id)
 
     def __remove_list(self, list_id):
-        print("__remove_list called")
         payload = {
             'listId': list_id,
         }
         self.sendRequest(self.SERVICE_URL + "scene-list-remove", payload, self.apiKey)
 
     def __select_products(self, products, download_type, file_types = None):
-        print("__select_products called")
         downloads = []
         if download_type == "bundle":
             downloads = self.__get_bulk(products, downloads)
@@ -47,7 +44,6 @@ class Landsat8_API_Accessor:
         return downloads
 
     def __get_product_download_options(self, list_id, dataset = 'landsat_ot_c2_l2', logging = False):
-        print("__get_product_download_options called")
         payload = {
             "listId": list_id,
             "datasetName": dataset,
@@ -56,14 +52,12 @@ class Landsat8_API_Accessor:
         return products
 
     def __get_bulk(self, products, downloads):
-        print("__get_bulk called")
         for product in products:
             if product['bulkAvailable']:
                 downloads.append({"entityId": product["entityId"], "productId": product["id"]})
         return downloads
 
     def __get_secondaryDownloads(self, products, downloads, file_types = None):
-        print("__get_secondaryDownloads called")
         for product in products:
             if product["secondaryDownloads"] is not None and len(product["secondaryDownloads"]) > 0:
                 for secondaryDownload in product["secondaryDownloads"]:
@@ -78,7 +72,6 @@ class Landsat8_API_Accessor:
         return downloads
 
     def __request_downloads(self, downloads, label, logging = False):
-        print("__request_downloads called")
         payload = {
             'downloads': downloads,
             "label": label,
@@ -89,7 +82,6 @@ class Landsat8_API_Accessor:
         return results
 
     def __retrieve_downloads(self, label):
-        print("__retrieve_downloads called")
         payload = {
             "label": label,
         }
@@ -97,7 +89,6 @@ class Landsat8_API_Accessor:
         return results
 
     def __runDownload(self, threads, url, downloaded):
-        print("__runDownload called")
         thread = threading.Thread(target=self.download_file, args=(url, downloaded,))
         threads.append(thread)
         thread.start()
@@ -107,7 +98,6 @@ class Landsat8_API_Accessor:
         Return entity_ids of downloaded files.
 
         """
-        print("__download called")
         downloaded = []
         scene_entityId_map = {x['entityId']: x['scene_entityId'] for x in downloads}
 
@@ -179,7 +169,6 @@ class Landsat8_API_Accessor:
         ------
         Inferred filename and type of provided file : str  
         """
-        print("__getFilename_fromCd called")
         if not cd:
             return None
         fname = re.findall('filename=(.+)', cd)
@@ -201,7 +190,6 @@ class Landsat8_API_Accessor:
         ------
         Path to downloaded file : str
         """
-        print("download_file called")
         self.sema.acquire()
         try:
             res = requests.get(url, stream=True)
@@ -235,7 +223,6 @@ class Landsat8_API_Accessor:
         to the API and/or make an account.
         
         """
-        print("login called")
         # login information
         payload = {'username': username, 'password': password}
 
@@ -263,7 +250,6 @@ class Landsat8_API_Accessor:
         API key can't be used by an unauthorized user.
         
         """
-        print("logout called")
         if self.sendRequest(self.SERVICE_URL + "logout", None, self.apiKey) == None:
             print("Logged Out\n\n")
         else:
@@ -291,7 +277,6 @@ class Landsat8_API_Accessor:
             require an API key since you use that endpoint to retrieve a valid API key.
         
         """
-        print("sendRequest called")
         json_data = json.dumps(data)
         
         if apiKey == None:
@@ -333,7 +318,6 @@ class Landsat8_API_Accessor:
         return output['data']
 
     def download_scenes_from_entity_ids(self, entity_ids, list_id = "test", logging = False):
-        print("download_scenes_from_entity_ids called")
         self.__add_list(list_id, entity_ids)
         products = self.__get_product_download_options(list_id)
         downloads = self.__select_products(products, download_type="band", file_types=["ST_B10_TIF"])
